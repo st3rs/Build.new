@@ -1,0 +1,223 @@
+---
+name: Obsidian Cybernetic
+colors:
+  surface: '#101319'
+  surface-dim: '#101319'
+  surface-bright: '#36393f'
+  surface-container-lowest: '#0b0e13'
+  surface-container-low: '#191c21'
+  surface-container: '#1d2025'
+  surface-container-high: '#272a30'
+  surface-container-highest: '#32353b'
+  on-surface: '#e1e2ea'
+  on-surface-variant: '#c2c6d8'
+  inverse-surface: '#e1e2ea'
+  inverse-on-surface: '#2d3036'
+  outline: '#8c90a1'
+  outline-variant: '#424656'
+  surface-tint: '#b3c5ff'
+  primary: '#b3c5ff'
+  on-primary: '#002b75'
+  primary-container: '#0066ff'
+  on-primary-container: '#f8f7ff'
+  inverse-primary: '#0054d6'
+  secondary: '#bdf4ff'
+  on-secondary: '#00363d'
+  secondary-container: '#00e3fd'
+  on-secondary-container: '#00616d'
+  tertiary: '#b2c5ff'
+  on-tertiary: '#002b73'
+  tertiary-container: '#296aeb'
+  on-tertiary-container: '#f8f7ff'
+  error: '#ffb4ab'
+  on-error: '#690005'
+  error-container: '#93000a'
+  on-error-container: '#ffdad6'
+  primary-fixed: '#dae1ff'
+  primary-fixed-dim: '#b3c5ff'
+  on-primary-fixed: '#001849'
+  on-primary-fixed-variant: '#003fa4'
+  secondary-fixed: '#9cf0ff'
+  secondary-fixed-dim: '#00daf3'
+  on-secondary-fixed: '#001f24'
+  on-secondary-fixed-variant: '#004f58'
+  tertiary-fixed: '#dae2ff'
+  tertiary-fixed-dim: '#b2c5ff'
+  on-tertiary-fixed: '#001848'
+  on-tertiary-fixed-variant: '#0040a1'
+  background: '#101319'
+  on-background: '#e1e2ea'
+  surface-variant: '#32353b'
+  surface-canvas: '#080B10'
+  surface-panel: '#0E131F'
+  surface-elevated: '#151B2B'
+  surface-overlay: rgba(14, 19, 31, 0.72)
+  border-hairline: rgba(255, 255, 255, 0.08)
+  border-focused: rgba(0, 102, 255, 0.5)
+  glow-cobalt: rgba(0, 102, 255, 0.25)
+  glow-cyan: rgba(0, 229, 255, 0.18)
+  text-primary: '#F7FAFC'
+  text-secondary: '#94A3B8'
+  text-muted: '#64748B'
+typography:
+  headline-xl:
+    fontFamily: Inter
+    fontSize: 56px
+    fontWeight: '700'
+    lineHeight: 64px
+    letterSpacing: -0.03em
+  headline-xl-mobile:
+    fontFamily: Inter
+    fontSize: 36px
+    fontWeight: '700'
+    lineHeight: 44px
+    letterSpacing: -0.02em
+  headline-lg:
+    fontFamily: Inter
+    fontSize: 40px
+    fontWeight: '600'
+    lineHeight: 48px
+    letterSpacing: -0.025em
+  headline-lg-mobile:
+    fontFamily: Inter
+    fontSize: 28px
+    fontWeight: '600'
+    lineHeight: 36px
+    letterSpacing: -0.02em
+  headline-md:
+    fontFamily: Inter
+    fontSize: 28px
+    fontWeight: '600'
+    lineHeight: 36px
+    letterSpacing: -0.02em
+  headline-sm:
+    fontFamily: Inter
+    fontSize: 20px
+    fontWeight: '600'
+    lineHeight: 28px
+    letterSpacing: -0.015em
+  body-lg:
+    fontFamily: Inter
+    fontSize: 18px
+    fontWeight: '400'
+    lineHeight: 28px
+    letterSpacing: -0.01em
+  body-md:
+    fontFamily: Inter
+    fontSize: 15px
+    fontWeight: '400'
+    lineHeight: 24px
+  body-sm:
+    fontFamily: Inter
+    fontSize: 13px
+    fontWeight: '400'
+    lineHeight: 20px
+  label-md:
+    fontFamily: JetBrains Mono
+    fontSize: 13px
+    fontWeight: '500'
+    lineHeight: 18px
+    letterSpacing: 0.01em
+  label-sm:
+    fontFamily: JetBrains Mono
+    fontSize: 11px
+    fontWeight: '500'
+    lineHeight: 16px
+    letterSpacing: 0.03em
+  code-snippet:
+    fontFamily: JetBrains Mono
+    fontSize: 14px
+    fontWeight: '400'
+    lineHeight: 22px
+rounded:
+  sm: 0.25rem
+  DEFAULT: 0.5rem
+  md: 0.75rem
+  lg: 1rem
+  xl: 1.5rem
+  full: 9999px
+spacing:
+  gutter: 1.5rem
+  gutter-mobile: 1rem
+  margin: 3rem
+  margin-mobile: 1.25rem
+  space-xs: 0.25rem
+  space-sm: 0.5rem
+  space-md: 1rem
+  space-lg: 1.5rem
+  space-xl: 2.5rem
+---
+
+## Brand & Style
+
+This design system embodies the high-velocity, bleeding-edge craft of modern AI-powered developer environments. Drawing direct inspiration from next-generation browser IDEs and intelligent software canvases, the visual signature fuses deep obsidian midnight tones with vibrant luminescent photonics.
+
+The design philosophy combines **Glassmorphism**, **Modern Developer Minimalism**, and **High-Contrast Cybernetics**:
+- **Atmospheric Void:** Surfaces recede into near-absolute deep space (#080B10, #0E131F), allowing code, tokens, and actionable UI to illuminate with optical brilliance.
+- **Electric Precision:** High-chroma electric cobalt, ultramarine, and cybernetic cyan gradients act as functional beacons, indicating execution states, prompt inputs, and primary actions.
+- **Tactile Developer Craft:** Surfaces employ subtle backdrop blurs (frosted glass), low-opacity perimeter borders (1px hairline strokes), dot-matrix spatial grids, and ultra-crisp monospaced or modern grotesque typography to foster intense technical trust and fluid creative flow.
+
+## Colors
+
+The color architecture is built around absolute dark-mode discipline, preventing visual fatigue during marathon coding sessions while spotlighting critical interaction surfaces:
+
+- **Primary (`#0066FF`):** The signature electric cobalt driver. Applied to primary execution CTAs, focused input perimeters, and active generation indicators.
+- **Secondary (`#00E5FF`):** High-energy cyber cyan. Reserved for micro-accents, streaming token animations, glowing gradients, and live status pings.
+- **Tertiary (`#3875F6`):** Balanced digital blue bridging deep UI panels to high-luminance triggers; used for chips, hover states, and badge borders.
+- **Neutral Canvas (`#080B10` & `#0E131F`):** Obsidian foundation tones calibrated with 2-4% blue saturation, eradicating dead muddy grays in favor of deep atmospheric depth.
+- **Atmospheric Overlays:** Radial background meshes blend deep navy hues (`#0A1D4A`) into velvet black with an overlay dot-matrix pattern rendered at `rgba(255, 255, 255, 0.04)` with an 18px pitch.
+
+## Typography
+
+Typography prioritizes extreme visual clarity, geometric order, and instant legibility across dense code, parameter prompts, and display surfaces:
+
+- **Primary Typeface (Inter):** Leveraged for all display headlines, prompts, and interface navigation. Tightly tracked negative letter-spacing (`-0.02em` to `-0.03em`) on large display headers creates the confident, modern tech posture seen in cutting-edge browser engines.
+- **Technical Monospace (JetBrains Mono):** Deployed for badge labels, command shortcuts, file paths, model metadata, and code executions. Monospaced elements utilize positive tracking (`+0.01em` to `+0.03em`) for immediate perceptual distinction from conversational UI copy.
+
+## Layout & Spacing
+
+The layout model balances an immersive central cockpit canvas with fluid multi-pane developer workflows:
+
+- **Grid Architecture:** 12-column adaptive fluid grid spanning a maximum content constraint of `1440px`. Mobile viewports compress to a single fluid column flanked by safe margins of `1.25rem`.
+- **Vertical Ryhthm & Prompt Positioning:** Primary interactive hubs (e.g., the central AI generative prompt container) sit horizontally centered along visual optical centers, maintaining generous breathing room (`space-xl` to `margin`) to evoke focus and command.
+- **Component Density:** Internal component padding employs a strict 4px / 8px scale (`space-xs` = 4px, `space-sm` = 8px, `space-md` = 16px). High-density IDE panels drop to compact paddings while marketing and hero interaction units expand outward.
+
+## Elevation & Depth
+
+Visual hierarchy does not rely on opaque dropshadows; instead, it utilizes light emission, frosted refractions, and tonal containment:
+
+- **Surface Glassmorphism:** Primary prompt inputs and floating command palettes feature `background: rgba(14, 19, 31, 0.75)` coupled with `backdrop-filter: blur(24px) saturate(160%)`.
+- **Perimeter Edge Tracing:** Containers use 1px solid hairline borders with gradient alpha ramps (`rgba(255, 255, 255, 0.12)` at top light entry, dropping to `rgba(255, 255, 255, 0.03)` at the base).
+- **Luminescent Backing (Glow Tiers):**
+  - *Tier 0 (Base Canvas):* Void background overlaid with a subtle CSS radial gradient (`radial-gradient(circle at 50% 25%, #0B256B 0%, #080B10 65%)`).
+  - *Tier 1 (Surface Glass):* Floating cards with `box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.48)`.
+  - *Tier 2 (Active Photon Injection):* Focused inputs and primary buttons radiate an ethereal electric aura: `box-shadow: 0 0 24px rgba(0, 102, 255, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.2)`.
+
+## Shapes
+
+The design system adopts a calibrated curvature system that transitions seamlessly from soft, modern foundational cards to sleek aerodynamic pills:
+
+- **Standard Containers (`roundedness: 2` / 12px – 16px):** Used for large prompt boxes, multi-line coding cards, modal dialogues, and canvas preview panes.
+- **Pill Elements (Full Radius / `9999px`):** Used strictly for high-frequency micro-interactions, category chips, template selectors, filter pills, and icon action capsules.
+- **Input Fields & Buttons:** Employ 10px to 14px outer corner radius, creating an ergonomic, contemporary handheld tactile feeling.
+
+## Components
+
+### Buttons
+- **Primary Execution CTA:** Saturated `#0066FF` background with micro-linear gradient (`linear-gradient(180deg, #1A75FF 0%, #005CE6 100%)`), high-contrast white text, `padding: 10px 20px`, `rounded-lg` (10px). Features an inset top-edge highlight (`1px inset rgba(255,255,255,0.2)`) and hover glow: `0 0 20px rgba(0, 102, 255, 0.45)`.
+- **Secondary / Ghost CTA:** Frosted glass surface (`rgba(255, 255, 255, 0.05)`), border `1px solid rgba(255, 255, 255, 0.1)`, `text-secondary` transitioning to `#FFFFFF` on hover.
+
+### Prompt Input Cockpit
+- Multi-line expansive frosted cockpit card (`background: rgba(18, 24, 38, 0.7)`, `backdrop-filter: blur(24px)`).
+- Hairline perimeter with top lighting. Interior features dedicated utility slots for attachments, model switches, and prompt action triggers ("Build now").
+- Focus State: Edge transitions to `#0066FF` with `0 0 32px rgba(0, 102, 255, 0.25)`.
+
+### Badges & Pill Chips
+- Fully rounded pills (`border-radius: 9999px`) styled with `rgba(255, 255, 255, 0.04)` fill and `1px solid rgba(255, 255, 255, 0.08)`.
+- Icon prefixes accompanied by `label-sm` or `body-sm` typography. Active/selected state injects electric cyan or cobalt tints.
+
+### Category & Template Action Tiles
+- Rectangular modular blocks (`border-radius: 12px`) sporting dark tinted navy backing (`#0E1424`), centered glyph icons (Globe, Device, Flask, Presentation), and subtle hover translate (`translateY(-2px)` with cobalt aura).
+
+### Input Fields & Search Bars
+- Recessed dark background (`#0B0F19`), crisp inner borders, placeholder text set in muted slate (`#64748B`), and monospaced shortcut badges (e.g. `⌘K`) pegged to the trailing edge.

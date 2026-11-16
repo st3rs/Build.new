@@ -1,0 +1,6 @@
+{
+  "name": "StrataCrawl",
+  "description": "Enterprise Web Scraper & Data Extraction Platform with distributed Playwright workers, proxy rotation, automated scheduling, Google Sheets integration, and multi-channel alerting.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
