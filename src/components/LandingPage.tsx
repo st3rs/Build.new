@@ -14,6 +14,7 @@ import {
   Github,
   Globe,
   Layers,
+  Loader2,
   Megaphone,
   MessageSquare,
   Mic,
@@ -45,6 +46,7 @@ import { BuildLogo } from './BuildLogo';
 interface LandingPageProps {
   lang: LanguageCode;
   selectedModel: AIModelId;
+  isGenerating?: boolean;
   onSelectModel: (model: AIModelId) => void;
   onStartBuild: (prompt: string, template?: ProjectTemplate) => void;
   onOpenPricing: () => void;
@@ -95,6 +97,7 @@ function renderTemplateIcon(iconName: ProjectTemplate['iconName']) {
 export function LandingPage({
   lang,
   selectedModel,
+  isGenerating = false,
   onSelectModel,
   onStartBuild,
   onOpenPricing,
@@ -324,6 +327,21 @@ export function LandingPage({
                 setPrompt(e.target.value);
                 if (promptError) setPromptError('');
               }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  if (!prompt.trim()) {
+                    setPromptError(
+                      isTh
+                        ? 'กรุณาอธิบายแอปพลิเคชันที่ต้องการสร้าง หรือเลือกเทมเพลตด้านล่าง'
+                        : 'Describe the application you want to build or pick a template below.',
+                    );
+                    return;
+                  }
+                  setPromptError('');
+                  onStartBuild(prompt.trim());
+                }
+              }}
               placeholder={
                 isTh
                   ? 'สร้างระบบสร้างคำสั่งหรืออธิบายเว็บแอปที่คุณอยากสร้าง เช่น แดชบอร์ด SaaS, ระบบ CRM, ร้านค้าออนไลน์...'
@@ -427,8 +445,17 @@ export function LandingPage({
                 type="submit"
                 className="cobalt-cta inline-flex items-center gap-2 rounded-xl px-4 sm:px-5 py-2 text-xs sm:text-sm font-semibold text-white transition-all whitespace-nowrap shrink-0 cursor-pointer"
               >
-                <span>{isTh ? 'ส่งคำสั่ง' : 'Build now'}</span>
-                <ArrowRight className="w-4 h-4" />
+                {isGenerating ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>{isTh ? 'กำลังสร้าง...' : 'Building...'}</span>
+                  </>
+                ) : (
+                  <>
+                    <span>{isTh ? 'ส่งคำสั่ง' : 'Build now'}</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
               </button>
             </div>
           </div>
@@ -551,7 +578,7 @@ export function LandingPage({
             </span>
             <h2 className="mt-3 text-2xl sm:text-3xl font-bold text-white tracking-tight">
               {isTh
-                ? '10 ตัวอย่างพร้อมฟ์โปรเจกต์ยอดนิยม พร้อมใช้งานทันที'
+                ? '10 ตัวอย่างโปรเจกต์ยอดนิยม พร้อมใช้งานทันที'
                 : '10 Popular Ready-to-Ship Project Templates'}
             </h2>
             <p className="text-sm text-slate-400 mt-1.5 max-w-2xl">

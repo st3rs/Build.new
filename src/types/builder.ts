@@ -32,7 +32,7 @@ export interface ProjectTemplate {
 
 export interface GeneratedFile {
   path: string;
-  language: 'tsx' | 'ts' | 'css' | 'json';
+  language: 'tsx' | 'ts' | 'css' | 'json' | 'html';
   content: string;
 }
 
@@ -51,6 +51,7 @@ export interface WorkspaceProject {
   prompt: string;
   category: Exclude<TemplateCategory, 'All'>;
   previewTitle: string;
+  previewHtml: string;
   previewMetrics: { label: string; value: string; delta: string }[];
   files: GeneratedFile[];
   messages: ChatMessage[];

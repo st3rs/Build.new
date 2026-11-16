@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { CheckCircle2, X } from 'lucide-react';
 import { AuthModal } from './components/AuthModal';
 import { BuilderWorkspace } from './components/BuilderWorkspace';
@@ -14,6 +14,8 @@ import type {
   ProjectTemplate,
   WorkspaceProject,
 } from './types/builder';
+import { AI_REQUEST_TIMEOUT_MS, resolveModelConfig } from './utils/aiConfig';
+import { applyIterationToHtml } from './utils/appSynthesizer';
 import {
   INITIAL_FREE_CREDITS,
   applyPlanUpgrade,
@@ -127,6 +129,10 @@ export default function App() {
   const [pricingModalOpen, setPricingModalOpen] = useState(false);
   const [insufficientAlert, setInsufficientAlert] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generationStartedAt, setGenerationStartedAt] = useState<number | null>(null);
+  const [generatingModel, setGeneratingModel] = useState<AIModelId | null>(null);
+  const latestGenIdRef = useRef(0);
 
   useEffect(() => {
     try {
@@ -190,7 +196,7 @@ export default function App() {
     setPricingModalOpen(true);
   }
 
-  function handleStartBuild(prompt: string, template?: ProjectTemplate) {
+  async function handleStartBuild(prompt: string, template?: ProjectTemplate) {
     const cost = calculateTokenCost('new_app', selectedModel);
     if (!hasSufficientCredits(credits, cost)) {
       openPricing(true);
@@ -226,9 +232,84 @@ export default function App() {
       },
     ];
     setActiveProject(created);
+
+    // If custom prompt (no preset template), run server-side Gemini synthesis with 45s timeout
+    if (!template) {
+      const reqId = ++latestGenIdRef.current;
+      const modelAtRequest = selectedModel;
+      const resolved = resolveModelConfig(modelAtRequest);
+      setIsGenerating(true);
+      setGeneratingModel(modelAtRequest);
+      setGenerationStartedAt(Date.now());
+
+      const controller = new AbortController();
+      const abortTimer = window.setTimeout(() => controller.abort(), AI_REQUEST_TIMEOUT_MS);
+      try {
+        const res = await fetch('/api/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          signal: controller.signal,
+          body: JSON.stringify({
+            prompt: created.prompt,
+            mode: 'new_app',
+            modelId: modelAtRequest,
+            lang,
+          }),
+        });
+        if (res.ok && latestGenIdRef.current === reqId) {
+          const data = (await res.json()) as {
+            fallback?: boolean;
+            modelUsed?: string;
+            thinkingLevel?: string;
+            title?: string;
+            assistantMessage?: string;
+            previewHtml?: string;
+            appTsx?: string;
+          };
+          if (!data.fallback && data.previewHtml) {
+            setActiveProject((prev) => {
+              if (!prev || prev.id !== created.id || prev.iterationCount > 0) return prev;
+              const updatedFiles = prev.files.map((f) => {
+                if (f.path === 'index.html' && data.previewHtml) {
+                  return { ...f, content: data.previewHtml };
+                }
+                if (f.path === 'src/App.tsx' && data.appTsx) {
+                  return { ...f, content: data.appTsx };
+                }
+                return f;
+              });
+              const modelNote = data.modelUsed
+                ? ` (${data.modelUsed} · Thinking ${data.thinkingLevel ?? resolved.thinkingLevel})`
+                : '';
+              return {
+                ...prev,
+                name: data.title || prev.name,
+                previewTitle: data.title || prev.previewTitle,
+                previewHtml: data.previewHtml || prev.previewHtml,
+                files: updatedFiles,
+                messages: prev.messages.map((m, idx) =>
+                  idx === 1 && data.assistantMessage
+                    ? { ...m, content: `${data.assistantMessage}${modelNote}` }
+                    : m,
+                ),
+              };
+            });
+          }
+        }
+      } catch {
+        // Keep instant synthesized app cleanly on network error/abort
+      } finally {
+        window.clearTimeout(abortTimer);
+        if (latestGenIdRef.current === reqId) {
+          setIsGenerating(false);
+          setGeneratingModel(null);
+          setGenerationStartedAt(null);
+        }
+      }
+    }
   }
 
-  function handleSendIteration(instruction: string) {
+  async function handleSendIteration(instruction: string) {
     if (!activeProject) return;
     const cost = calculateTokenCost('iteration', selectedModel);
     if (!hasSufficientCredits(credits, cost)) {
@@ -244,22 +325,34 @@ export default function App() {
 
     setCredits(result.remaining);
     const nowLabel = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const targetId = activeProject.id;
+    const nextIteration = activeProject.iterationCount + 1;
+    const optimisticHtml = applyIterationToHtml(
+      activeProject.previewHtml,
+      instruction,
+      activeProject.iterationCount,
+      lang,
+    );
 
     setActiveProject((prev) => {
       if (!prev) return prev;
-      const nextIteration = prev.iterationCount + 1;
-      const updatedFiles = prev.files.map((file, idx) =>
-        idx === 0
-          ? {
-              ...file,
-              content: `${file.content}\n\n// Iteration #${nextIteration}: ${instruction}`,
-            }
-          : file,
-      );
+      const updatedFiles = prev.files.map((file) => {
+        if (file.path === 'index.html') {
+          return { ...file, content: optimisticHtml };
+        }
+        if (file.path === 'src/App.tsx') {
+          return {
+            ...file,
+            content: `${file.content}\n\n// Iteration #${nextIteration}: ${instruction}`,
+          };
+        }
+        return file;
+      });
       return {
         ...prev,
         iterationCount: nextIteration,
         prompt: `${prev.prompt} · Iteration ${nextIteration}: ${instruction}`,
+        previewHtml: optimisticHtml,
         files: updatedFiles,
         messages: [
           ...prev.messages,
@@ -274,13 +367,84 @@ export default function App() {
           {
             id: `msg-a-${Date.now() + 1}`,
             role: 'assistant',
-            content: `Applied iteration #${nextIteration} ("${instruction}") across ${prev.files[0]?.path ?? 'src/App.tsx'}. Preview refreshed.`,
+            content: `Applied iteration #${nextIteration} ("${instruction}"). Live preview refreshed.`,
             modelId: selectedModel,
             timestamp: nowLabel,
           },
         ],
       };
     });
+
+    const reqId = ++latestGenIdRef.current;
+    const modelAtRequest = selectedModel;
+    const resolved = resolveModelConfig(modelAtRequest);
+    setIsGenerating(true);
+    setGeneratingModel(modelAtRequest);
+    setGenerationStartedAt(Date.now());
+
+    const controller = new AbortController();
+    const abortTimer = window.setTimeout(() => controller.abort(), AI_REQUEST_TIMEOUT_MS);
+    try {
+      const res = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
+        body: JSON.stringify({
+          prompt: instruction,
+          mode: 'iteration',
+          modelId: modelAtRequest,
+          currentHtml: activeProject.previewHtml,
+          currentTitle: activeProject.name,
+          lang,
+        }),
+      });
+      if (res.ok && latestGenIdRef.current === reqId) {
+        const data = (await res.json()) as {
+          fallback?: boolean;
+          modelUsed?: string;
+          thinkingLevel?: string;
+          assistantMessage?: string;
+          previewHtml?: string;
+          appTsx?: string;
+        };
+        if (!data.fallback && data.previewHtml) {
+          setActiveProject((prev) => {
+            if (!prev || prev.id !== targetId || prev.iterationCount !== nextIteration) return prev;
+            const updatedFiles = prev.files.map((f) => {
+              if (f.path === 'index.html' && data.previewHtml) {
+                return { ...f, content: data.previewHtml };
+              }
+              if (f.path === 'src/App.tsx' && data.appTsx) {
+                return { ...f, content: data.appTsx };
+              }
+              return f;
+            });
+            const modelNote = data.modelUsed
+              ? ` (${data.modelUsed} · Thinking ${data.thinkingLevel ?? resolved.thinkingLevel})`
+              : '';
+            return {
+              ...prev,
+              previewHtml: data.previewHtml || prev.previewHtml,
+              files: updatedFiles,
+              messages: prev.messages.map((m, idx) =>
+                idx === prev.messages.length - 1 && data.assistantMessage
+                  ? { ...m, content: `${data.assistantMessage}${modelNote}` }
+                  : m,
+              ),
+            };
+          });
+        }
+      }
+    } catch {
+      // Keep optimistic live HTML update cleanly
+    } finally {
+      window.clearTimeout(abortTimer);
+      if (latestGenIdRef.current === reqId) {
+        setIsGenerating(false);
+        setGeneratingModel(null);
+        setGenerationStartedAt(null);
+      }
+    }
   }
 
   function handleUpgradePlan(targetPlan: Exclude<PlanTier, 'Free'>) {
@@ -329,6 +493,9 @@ export default function App() {
           plan={plan}
           credits={credits}
           selectedModel={selectedModel}
+          isGenerating={isGenerating}
+          generatingModel={generatingModel ?? selectedModel}
+          generationStartedAt={generationStartedAt}
           onSelectModel={setSelectedModel}
           onSendIteration={handleSendIteration}
           onBackToLanding={() => setActiveProject(null)}
@@ -360,6 +527,7 @@ export default function App() {
           <LandingPage
             lang={lang}
             selectedModel={selectedModel}
+            isGenerating={isGenerating}
             onSelectModel={setSelectedModel}
             onStartBuild={handleStartBuild}
             onOpenPricing={() => openPricing(false)}

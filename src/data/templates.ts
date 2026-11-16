@@ -1,4 +1,5 @@
 import type { GeneratedFile, LanguageCode, ProjectTemplate, WorkspaceProject } from '../types/builder';
+import { synthesizeInteractiveApp } from '../utils/appSynthesizer';
 
 export const PROJECT_TEMPLATES: ProjectTemplate[] = [
   {
@@ -421,6 +422,12 @@ export function buildProjectFromPrompt(
   lang: LanguageCode = 'th',
 ): WorkspaceProject {
   const cleanPrompt = prompt.trim();
+  const synthesized = synthesizeInteractiveApp({
+    prompt: cleanPrompt || (template ? (lang === 'th' ? template.promptTh : template.prompt) : ''),
+    template,
+    lang,
+  });
+
   if (template) {
     return {
       id: `proj-${Date.now()}`,
@@ -428,8 +435,16 @@ export function buildProjectFromPrompt(
       prompt: cleanPrompt || (lang === 'th' ? template.promptTh : template.prompt),
       category: template.category,
       previewTitle: template.previewTitle,
+      previewHtml: synthesized.previewHtml,
       previewMetrics: template.previewMetrics,
-      files: template.generatedFiles,
+      files: [
+        {
+          path: 'index.html',
+          language: 'html',
+          content: synthesized.previewHtml,
+        },
+        ...template.generatedFiles,
+      ],
       messages: [],
       iterationCount: 0,
     };
@@ -441,6 +456,11 @@ export function buildProjectFromPrompt(
       : cleanPrompt || (lang === 'th' ? 'โปรเจกต์ AI ที่สร้างใหม่' : 'Custom AI Application');
 
   const customFiles: GeneratedFile[] = [
+    {
+      path: 'index.html',
+      language: 'html',
+      content: synthesized.previewHtml,
+    },
     {
       path: 'src/App.tsx',
       language: 'tsx',
@@ -507,12 +527,9 @@ export default function GeneratedApp() {
     name: shortTitle,
     prompt: cleanPrompt,
     category: 'AI & DevTools',
-    previewTitle: shortTitle,
-    previewMetrics: [
-      { label: 'Bundle Size', value: '48.2 KB', delta: 'Gzipped' },
-      { label: 'Build Latency', value: '1.14 s', delta: 'Edge Ready' },
-      { label: 'Components', value: '6', delta: 'Typed' },
-    ],
+    previewTitle: synthesized.title,
+    previewHtml: synthesized.previewHtml,
+    previewMetrics: synthesized.metrics,
     files: customFiles,
     messages: [],
     iterationCount: 0,
